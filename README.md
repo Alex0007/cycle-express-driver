@@ -2,10 +2,6 @@
 [Express.js](http://expressjs.com/) driver for [cycle.js](http://cycle.js.org/) forked from [here](https://github.com/whitecolor/cycle-express)
 
 ## Stream of requests
-```
-router.METHOD(path) // -> stream of requests
-```
-
 ```js
 router.get('/').map(({id}) => {
   return {id, send: 'Hello, world'}

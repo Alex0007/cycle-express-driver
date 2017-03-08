@@ -1,6 +1,6 @@
 {
   "name": "cycle-express-driver",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "Cycle.js driver for Express framework",
   "main": "built/index.js",
   "typings": "index.d.ts",
@@ -24,5 +24,8 @@
     "rxjs": "^5.2.0",
     "tslint": "^4.5.1",
     "typescript": "^2.2.1"
-  }
+  },
+  "repository": "git@github.com:Alex0007/cycle-express-driver.git",
+  "author": "Alex0007 <Alex0007lolpvp@gmail.com>",
+  "license": "MIT"
 }
