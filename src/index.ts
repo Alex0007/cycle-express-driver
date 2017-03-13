@@ -70,7 +70,7 @@ const createRouterSource = (router) => {
             stop: () => { /* do nothing */ }
         });
 
-        return adapt(incoming$);
+        return adapt(incoming$.remember());
     };
 
     methods.concat('all').forEach((method: string) => {

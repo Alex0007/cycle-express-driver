@@ -36,7 +36,7 @@ const createRouterSource = (router) => {
             },
             stop: () => { }
         });
-        return adapt_1.adapt(incoming$);
+        return adapt_1.adapt(incoming$.remember());
     };
     methods.concat('all').forEach((method) => {
         driverRouter[method] = (path) => createRouteStream(method, path);
