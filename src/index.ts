@@ -46,7 +46,8 @@ const terminateRequestWithMethodsMap = [
 const requestsStore: {
     [prop: string]: {
         req: Request,
-        res: express.Response
+        res: express.Response,
+        next: express.NextFunction
     }
 } = {};
 
@@ -56,13 +57,13 @@ const createRouterSource = (router) => {
     const createRouteStream = (method, path) => {
         const incoming$ = xs.create<Request>({
             start: (listener) => {
-                router[method](path, (req: express.Request, res: express.Response) => {
+                router[method](path, (req: express.Request, res: express.Response, next: express.NextFunction) => {
                     const request = Object.assign({
                         id: cuid()
                     }, req) as Request;
 
                     request.locals = request.locals || {};
-                    requestsStore[request.id] = { req: request, res };
+                    requestsStore[request.id] = { req: request, res, next };
 
                     listener.next(request);
                 });
@@ -96,7 +97,7 @@ export const makeRouterDriver = (router: express.Router) => {
                     return;
                 }
 
-                const { res } = requestsStore[response.id];
+                const { res, next } = requestsStore[response.id];
 
                 let terminateRequestWith: string | undefined;
                 const methods: string[] = [];
@@ -112,6 +113,8 @@ export const makeRouterDriver = (router: express.Router) => {
                 }
 
                 if (terminateRequestWith) { methods.push(terminateRequestWith); }
+
+                next()
 
                 methods.forEach((method) => res[method](response[method]));
 

@@ -25,12 +25,12 @@ const createRouterSource = (router) => {
     const createRouteStream = (method, path) => {
         const incoming$ = xstream_1.default.create({
             start: (listener) => {
-                router[method](path, (req, res) => {
+                router[method](path, (req, res, next) => {
                     const request = Object.assign({
                         id: cuid()
                     }, req);
                     request.locals = request.locals || {};
-                    requestsStore[request.id] = { req: request, res };
+                    requestsStore[request.id] = { req: request, res, next };
                     listener.next(request);
                 });
             },
@@ -56,7 +56,7 @@ exports.makeRouterDriver = (router) => {
                     console.warn(`request with id ${response.id} not found`);
                     return;
                 }
-                const { res } = requestsStore[response.id];
+                const { res, next } = requestsStore[response.id];
                 let terminateRequestWith;
                 const methods = [];
                 for (const key in response) {
@@ -72,6 +72,7 @@ exports.makeRouterDriver = (router) => {
                 if (terminateRequestWith) {
                     methods.push(terminateRequestWith);
                 }
+                next();
                 methods.forEach((method) => res[method](response[method]));
                 if (terminateRequestWith) {
                     delete requestsStore[response.id];
