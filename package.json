@@ -1,6 +1,6 @@
 {
   "name": "cycle-express-driver",
-  "version": "6.0.1",
+  "version": "6.0.0",
   "description": "Cycle.js driver for Express framework",
   "main": "built/index.js",
   "typings": "index.d.ts",
