@@ -3,9 +3,10 @@ import { adapt } from '@cycle/run/lib/adapt';
 import * as cuid from 'cuid';
 import * as express from 'express';
 import * as methods from 'methods';
+import * as url from 'url';
 import xs, { Stream } from 'xstream';
 
-export type RoutePath = string | RegExp;
+export type RoutePath = string;
 
 export interface RouterSourceTemplate<T> {
     route: (path: RoutePath) => RouterSourceTemplate<T>;
@@ -50,7 +51,13 @@ const requestsStore: {
     }
 } = {};
 
-const createRouterSource = (router) => {
+const createdStreams = {};
+
+const resolve = (from: RoutePath, to: RoutePath) => {
+    return url.resolve(from + '/', to.replace(/^\//, '')).replace('//', '/');
+};
+
+const createRouterSource = (router, base = '/') => {
     const driverRouter: any = {};
 
     const createRouteStream = (method, path) => {
@@ -74,13 +81,17 @@ const createRouterSource = (router) => {
     };
 
     methods.concat('all').forEach((method: string) => {
-        driverRouter[method] = (path: RoutePath) => createRouteStream(method, path);
+        driverRouter[method] = (path: RoutePath) => {
+            const routeStreamKey = method.toUpperCase() + ' ' + resolve(base, path);
+            createdStreams[routeStreamKey] = createdStreams[routeStreamKey] || createRouteStream(method, path);
+            return createdStreams[routeStreamKey];
+        };
     });
 
     driverRouter.route = (path: RoutePath) => {
         const nestedRouter = express.Router();
         router.use(path, nestedRouter);
-        return createRouterSource(nestedRouter);
+        return createRouterSource(nestedRouter, resolve(base, path));
     };
 
     return driverRouter as RouterSource;

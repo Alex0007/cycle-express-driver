@@ -2,7 +2,7 @@
 import { Driver } from '@cycle/run';
 import * as express from 'express';
 import xs from 'xstream';
-export declare type RoutePath = string | RegExp;
+export declare type RoutePath = string;
 export interface RouterSourceTemplate<T> {
     route: (path: RoutePath) => RouterSourceTemplate<T>;
     get: (path: RoutePath) => T;

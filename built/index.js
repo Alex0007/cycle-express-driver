@@ -4,6 +4,7 @@ const adapt_1 = require("@cycle/run/lib/adapt");
 const cuid = require("cuid");
 const express = require("express");
 const methods = require("methods");
+const url = require("url");
 const xstream_1 = require("xstream");
 const terminateRequestWithMethodsMap = [
     'download',
@@ -20,7 +21,11 @@ const terminateRequestWithMethodsMap = [
     return obj;
 }, {});
 const requestsStore = {};
-const createRouterSource = (router) => {
+const createdStreams = {};
+const resolve = (from, to) => {
+    return url.resolve(from + '/', to.replace(/^\//, '')).replace('//', '/');
+};
+const createRouterSource = (router, base = '/') => {
     const driverRouter = {};
     const createRouteStream = (method, path) => {
         const incoming$ = xstream_1.default.create({
@@ -39,12 +44,16 @@ const createRouterSource = (router) => {
         return adapt_1.adapt(incoming$.remember());
     };
     methods.concat('all').forEach((method) => {
-        driverRouter[method] = (path) => createRouteStream(method, path);
+        driverRouter[method] = (path) => {
+            const routeStreamKey = method.toUpperCase() + ' ' + resolve(base, path);
+            createdStreams[routeStreamKey] = createdStreams[routeStreamKey] || createRouteStream(method, path);
+            return createdStreams[routeStreamKey];
+        };
     });
     driverRouter.route = (path) => {
         const nestedRouter = express.Router();
         router.use(path, nestedRouter);
-        return createRouterSource(nestedRouter);
+        return createRouterSource(nestedRouter, resolve(base, path));
     };
     return driverRouter;
 };
