@@ -8,8 +8,11 @@ router.get('/').map(({id}) => {
 })
 ```
 
-### Nested
+## Nested
 ```js
 const nested = router.route('/api')
 nested.post('/users').map((req) => {})
  ```
+
+## Example
+Check out the minimal working sample at [Alex0007/cycle-express-hello-world](https://github.com/Alex0007/cycle-express-hello-world)
