@@ -54,7 +54,7 @@ const requestsStore: {
 const createdStreams = {};
 
 const resolve = (from: RoutePath, to: RoutePath) => {
-    return url.resolve(from + '/', to.replace(/^\//, '')).replace('//', '/');
+    return url.resolve(from + '/', to.replace(/^\//, '')).replace('//', '/').replace(/\/$/, '');
 };
 
 const createRouterSource = (router, base = '/') => {

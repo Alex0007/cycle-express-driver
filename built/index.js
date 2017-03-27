@@ -23,7 +23,7 @@ const terminateRequestWithMethodsMap = [
 const requestsStore = {};
 const createdStreams = {};
 const resolve = (from, to) => {
-    return url.resolve(from + '/', to.replace(/^\//, '')).replace('//', '/');
+    return url.resolve(from + '/', to.replace(/^\//, '')).replace('//', '/').replace(/\/$/, '');
 };
 const createRouterSource = (router, base = '/') => {
     const driverRouter = {};
